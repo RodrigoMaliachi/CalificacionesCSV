@@ -10,6 +10,7 @@ public class CSVManager {
     private static List<String> lines;
     private static List<String> newLines;
     private static int currentLine;
+    private static boolean isCounterStoped = false;
 
     public static void setRoot(String directorio) {
         root = directorio;
@@ -24,19 +25,19 @@ public class CSVManager {
         currentLine = 0;
     }
 
-    public static String getCurrentLine() {
-        return lines.get(currentLine);
-    }
+    public static String getCurrentLine() { return lines.get(currentLine); }
 
-    public static void initializeNewLines() {
-        newLines = new ArrayList<>();
-    }
+    public static List<String> getNewLines() { return  newLines; }
 
-    public static void addNewLine(String newLine) {
-        newLines.add(newLine);
-    }
+    public static void initializeNewLines() { newLines = new ArrayList<>(); }
+
+    public static void addNewLine(String newLine) { newLines.add(newLine); }
 
     public static int nextLine() {
+        if (isCounterStoped) {
+            isCounterStoped = false;
+            return currentLine;
+        }
         return currentLine + 1 >= lines.size() ? -1 : ++currentLine;
     }
 
@@ -49,4 +50,6 @@ public class CSVManager {
         }
         writer.close();
     }
+
+    public static void stopCounter() { isCounterStoped = true; }
 }

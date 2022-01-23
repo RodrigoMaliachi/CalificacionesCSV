@@ -6,9 +6,9 @@ import java.io.IOException;
 public class Menu {
 
     protected static BufferedReader reader;
-    private static int result = 0;
+    protected static int result = 0;
 
-    public static int printMenu() throws IOException {
+    public static void printMenu() throws IOException {
         System.out.flush();
         System.out.println("Ingrese una letra correspondiente a una opción disponible:");
         System.out.println("[C]ambiar ruta de acceso al archivo CSV.");
@@ -17,7 +17,6 @@ public class Menu {
         System.out.println("[A]rchivar calificaciones.");
         System.out.println("[S]alir.");
         choseInstruction( reader.readLine().toUpperCase().charAt(0) );
-        return result;
     }
 
     private static void choseInstruction(char instruction) throws IOException {
@@ -25,11 +24,13 @@ public class Menu {
         switch (instruction) {
             case 'C' -> readRoot();
             case 'R' -> captureGrades();
+            case 'I' -> printGrades();
+            case 'A' -> CSVManager.rewroteCSV();
             case 'S' -> result = -1;
         }
     }
 
-    private static void readRoot() throws IOException {
+    protected static void readRoot() throws IOException {
         System.out.println("Escribe la ruta de acceso del archivo CSV.");
         CSVManager.setRoot( reader.readLine() );
         CSVManager.readFile();
@@ -38,8 +39,10 @@ public class Menu {
     private static void captureGrades() throws IOException {
 
         int calificacion;
+        CSVManager.initializeNewLines();
 
         do {
+            System.out.flush();
             String line = CSVManager.getCurrentLine();
             String[] columns = line.split("[,]");
 
@@ -60,9 +63,24 @@ public class Menu {
             } finally {
                 if ( calificacion > 0 && calificacion <= 100 )
                     CSVManager.addNewLine( line + "," + calificacion);
+                else
+                    CSVManager.stopCounter();
             }
 
         } while (CSVManager.nextLine() != -1);
+    }
+
+    private static void printGrades() {
+        System.out.flush();
+        System.out.println("MATRICULA  | APELLIDO PATERNO | APELLIDO MATERNO |       NOMBRE      | CALIFICACIÓN");
+        for (String line : CSVManager.getNewLines()) {
+            String[] columns = line.split("[,]");
+            System.out.print(columns[0] + spaceThisLong(4));
+            System.out.print(columns[1] + spaceThisLong(19 - columns[1].length()));
+            System.out.print(columns[2] + spaceThisLong(19 - columns[2].length()));
+            System.out.print(columns[3] + spaceThisLong(20 - columns[3].length()));
+            System.out.println(columns[4]);
+        }
     }
 
     private static String spaceThisLong(int magnitude) {
