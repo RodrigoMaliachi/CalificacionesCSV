@@ -3,6 +3,9 @@ package com.uady;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
 public class CSVManager {
 
@@ -41,14 +44,29 @@ public class CSVManager {
         return currentLine + 1 >= lines.size() ? -1 : ++currentLine;
     }
 
-    public static void rewroteCSV() throws IOException{
-        BufferedWriter writer = new BufferedWriter(new FileWriter(root));
-        writer.flush();
-        for (String line : newLines) {
-            writer.write(line);
-            writer.newLine();
-        }
-        writer.close();
+    public static void createCSV(List<String> content) throws IOException{
+       if(content==null){
+           System.out.println("Aun no ha capturado ninguna calificacion");
+      }else {
+           try {
+               String ruta = "C:/Users/PERSONAL/Desktop/tareas/diseño de software/listanueva.csv";
+               File file = new File(ruta);
+               // Si el archivo no existe es creado
+               if (!file.exists()) {
+                   file.createNewFile();
+               }
+               FileWriter fw = new FileWriter(file);
+               BufferedWriter bw = new BufferedWriter(fw);
+               for (String contenido : content) {
+                   bw.write(contenido);
+                   bw.newLine();
+               }
+               bw.close();
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
+
     }
 
     public static void stopCounter() { isCounterStoped = true; }
