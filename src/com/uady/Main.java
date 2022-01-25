@@ -18,4 +18,3 @@ public class Main {
         }
     }
 }
-//C:\Users\PERSONAL\Desktop\tareas\diseño de software\Lista.csv

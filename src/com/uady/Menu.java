@@ -9,7 +9,6 @@ public class Menu {
     protected static int result = 0;
 
     public static void printMenu() throws IOException {
-        System.out.flush();
         System.out.println("Ingrese una letra correspondiente a una opción disponible:");
         System.out.println("[C]ambiar ruta de acceso al archivo CSV.");
         System.out.println("[R]egistrar calificaciones.");
@@ -19,12 +18,11 @@ public class Menu {
     }
 
     private static void choseInstruction(char instruction) throws IOException {
-        System.out.flush();
         switch (instruction) {
-            case 'C' : readRoot(); break;
-            case 'R' : captureGrades(); break;
-            case 'A' : CSVManager.createCSV(CSVManager.getNewLines()); break;
-            case 'S' : result = -1; break;
+            case 'C' -> readRoot();
+            case 'R' -> captureGrades();
+            case 'A' -> CSVManager.createCSV();
+            case 'S' -> result = -1;
         }
     }
 
@@ -39,12 +37,11 @@ public class Menu {
         int calificacion;
         CSVManager.initializeNewLines();
 
+        System.out.println("MATRICULA  | PRIMER APELLIDO | SEGUNDO APELLIDO | NOMBRE");
         do {
-            System.out.flush();
             String line = CSVManager.getCurrentLine();
-            String[] columns = line.split("[,]");
+            String[] columns = line.split(",");
 
-            System.out.println("MATRICULA  | PRIMER APELLIDO | SEGUNDO APELLIDO | NOMBRE");
             System.out.print(columns[0] + spaceThisLong(4));
             System.out.print(columns[1] + spaceThisLong(19 - columns[1].length()));
             System.out.print(columns[2] + spaceThisLong(19 - columns[2].length()));

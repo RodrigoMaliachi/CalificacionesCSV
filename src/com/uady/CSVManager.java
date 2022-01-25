@@ -30,8 +30,6 @@ public class CSVManager {
 
     public static String getCurrentLine() { return lines.get(currentLine); }
 
-    public static List<String> getNewLines() { return  newLines; }
-
     public static void initializeNewLines() { newLines = new ArrayList<>(); }
 
     public static void addNewLine(String newLine) { newLines.add(newLine); }
@@ -44,20 +42,19 @@ public class CSVManager {
         return currentLine + 1 >= lines.size() ? -1 : ++currentLine;
     }
 
-    public static void createCSV(List<String> content) throws IOException{
-       if(content==null){
+    public static void createCSV() {
+       if (newLines==null) {
            System.out.println("Aun no ha capturado ninguna calificacion");
-      }else {
+       } else {
            try {
-               String ruta = "C:/Users/PERSONAL/Desktop/tareas/diseño de software/listanueva.csv";
+               System.out.print("Escribe la ruta para el nuevo archivo: ");
+               String ruta = new BufferedReader(new InputStreamReader(System.in)).readLine();
                File file = new File(ruta);
-               // Si el archivo no existe es creado
-               if (!file.exists()) {
-                   file.createNewFile();
-               }
-               FileWriter fw = new FileWriter(file);
-               BufferedWriter bw = new BufferedWriter(fw);
-               for (String contenido : content) {
+               file.createNewFile();
+
+               BufferedWriter bw = new BufferedWriter(new FileWriter(ruta));
+
+               for (String contenido : newLines) {
                    bw.write(contenido);
                    bw.newLine();
                }
