@@ -5,8 +5,11 @@ import java.io.IOException;
 
 public class Menu {
 
+    enum Result {FINISHED, INVALID_ROOT, EMPTY_ROOT, OK}
+
     protected static BufferedReader reader;
-    protected static int result = 0;
+    protected static Result result = Result.EMPTY_ROOT;
+    protected static CSVManager students;
 
     public static void printMenu() throws IOException {
         System.out.println("Ingrese una letra correspondiente a una opción disponible:");
@@ -17,29 +20,44 @@ public class Menu {
         choseInstruction( reader.readLine().toUpperCase().charAt(0) );
     }
 
-    private static void choseInstruction(char instruction) throws IOException {
-        switch (instruction) {
-            case 'C' -> readRoot();
-            case 'R' -> captureGrades();
-            case 'A' -> CSVManager.createCSV();
-            case 'S' -> result = -1;
+    private static void choseInstruction(char instruction) {
+        try {
+            switch (instruction) {
+                case 'C' -> readRoot();
+                case 'R' -> captureGrades();
+                case 'A' -> students.writeFile(true);
+                case 'S' -> result = Result.FINISHED;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    protected static void readRoot() throws IOException {
+    protected static void readRoot() {
         System.out.println("Escribe la ruta de acceso del archivo CSV.");
-        CSVManager.setRoot( reader.readLine() );
-        CSVManager.readFile();
+        try {
+            students = new CSVManager( reader.readLine() );
+            result = Result.OK;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            result = Result.INVALID_ROOT;
+        }
     }
 
     private static void captureGrades() throws IOException {
 
         int calificacion;
-        CSVManager.initializeNewLines();
+        boolean invalidGrade = false;
+
+        students.resetNewLines();
 
         System.out.println("MATRICULA  | PRIMER APELLIDO | SEGUNDO APELLIDO | NOMBRE");
         do {
-            String line = CSVManager.getCurrentLine();
+
+            if ( invalidGrade )
+                System.err.println("La calificación no es válida");
+
+            String line = students.getCurrentLine();
             String[] columns = line.split(",");
 
             System.out.print(columns[0] + spaceThisLong(4));
@@ -54,15 +72,16 @@ public class Menu {
                 calificacion = Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
                 System.err.println(e.getMessage());
-                e.printStackTrace();
             } finally {
-                if ( calificacion > 0 && calificacion <= 100 )
-                    CSVManager.addNewLine( columns[0] + "," + "Diseño de software" + "," +calificacion);
+                if ( calificacion > 0 && calificacion <= 100 ) {
+                    students.addNewLine(columns[0] + "," + "Diseño de software" + "," + calificacion);
+                    invalidGrade = false;
+                }
                 else
-                    CSVManager.stopCounter();
+                    invalidGrade = true;
             }
 
-        } while (CSVManager.nextLine() != -1);
+        } while ( invalidGrade || students.nextLine() != -1);
     }
 
     private static String spaceThisLong(int magnitude) {
